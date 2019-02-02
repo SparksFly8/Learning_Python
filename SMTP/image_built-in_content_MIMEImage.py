@@ -25,7 +25,7 @@ with open('/home/sparkfly/Desktop/image.png','rb') as f:
     msg.attach(mimeImage)
 
 server = smtplib.SMTP(smtp_sever,25)
-server.set_debuglevel(1)　 # 查看实时登录日志信息
+server.set_debuglevel(1) # 查看实时登录日志信息
 server.login(from_addr,password)
 server.sendmail(from_addr,to_addr,msg.as_string())
 server.quit()
