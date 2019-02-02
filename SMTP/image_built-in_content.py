@@ -35,7 +35,7 @@ with open('/home/sparkfly/Desktop/测试文档.doc','rb') as f:
     msg.attach(mimebase)
 
 server = smtplib.SMTP(smtp_sever,25)
-server.set_debuglevel(1)　 # 查看实时登录日志信息
+server.set_debuglevel(1) # 查看实时登录日志信息
 server.login(from_addr,password)
 server.sendmail(from_addr,to_addr,msg.as_string())
 server.quit()
