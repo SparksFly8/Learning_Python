@@ -26,8 +26,7 @@ async def get_html(url):
         # async with是异步上下文管理器
         async with aiohttp.ClientSession() as session:  # 获取session
             async with session.request('GET', url) as resp:  # 提出请求
-                html_unicode = await resp.text()
-                html = bytes(bytearray(html_unicode, encoding='utf-8'))
+                html = await resp.read() # 可直接获取bytes 
                 htmls.append(html)
                 print('异步获取%s下的html.' % url)
 
