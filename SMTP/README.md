@@ -9,12 +9,16 @@ Python对SMTP支持有`smtplib`和`email`两个模块
 ## 一、基本环境设置
 以下笔者测试使用163邮箱给foxmail邮箱发邮件，所以需要手动对发送方邮箱配置SMTP协议，其余邮箱操作同理。
 首先，登录到163邮箱，然后在设置菜单中点击如下选项。
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019011217254360.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
+
 然后，手动开启SMTP服务，此时可能需要设置客户端授权码，即为**登录第三方邮件客户端的专用口令**，和该邮箱登录密码不同，对于163邮箱可以自己设置授权码，但如果是QQ或者foxmail邮箱会有系统自动分配给用户授权码。
 ![１１１](https://img-blog.csdnimg.cn/20190112172626215.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
 因为发送方是163邮箱，所以此时用到的SMTP服务器是`smtp.163.com`，在163邮箱设置可看到如下图所示：
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190112173305473.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
+
 对于其他邮箱相应的SMTP服务器是`smtp.xxx.com`，比如以下是**常用邮箱SMTP端口及登录说明**(亲测可用)：
+
 
 |邮箱| SMTP服务器 |登录口令 |支持加密方式 |对应端口号 |
 |--|--|--|--|--|--|
@@ -22,6 +26,7 @@ Python对SMTP支持有`smtplib`和`email`两个模块
 |126  | smtp.126.com | 个人设置授权码|明文/SSL加密|25/465 |
 |QQ  | smtp.qq.com | 系统分配授权码|明文/SSL加密/TLS加密|25/465/587 |
 |Gmail  |smtp.gmail.com | 邮箱登录密码|TLS加密|587 |
+
 
 
 ## 二、实现文本邮件发送
@@ -53,7 +58,9 @@ sever.sendmail(from_addr,to_addr,msg.as_string())
 sever.quit()
 ```
 **【注意事项】：**
+
 **1）上面代码中发送方是163邮箱，所以密码不是邮箱的登录密码，而是手动开启SMTP协议后设置或分配的`授权码`！**，但如果是Gmail则使用的密码是**登录密码**。
+
 2）如果没有加入如下代码，则会被识别为**垃圾邮件**，故出现错误代码是`554`的`smtplib.SMTPDataError`错误。[点击查看邮件退信代码说明](http://help.163.com/09/1224/17/5RAJ4LMH00753VB8.html)
 ```js
 msg['From'] = formataddr(('若水',from_addr))
@@ -192,12 +199,14 @@ server.starttls()
 ```
 不同邮箱支持不同的加密协议，常用邮箱支持的**加密方式**和对应**端口号**如下：
 
+
 |邮箱| SMTP服务器 |端口号 |支持加密方式 |
 |--|--|--|--|--|
 |163  | smtp.163.com |25/465 |明文/SSL加密|
 |126  | smtp.126.com |25/465 |明文/SSL加密|
 |QQ  | smtp.qq.com |25/465/587 |明文/SSL加密/TLS加密|
 |Gmail  |smtp.gmail.com |587 |TLS加密|
+
 
 #### ３．登录gmail常见问题
 笔者以上都用的是`163`邮箱作为发送方，如果使用`gmail`作为发送方，除了SMTP服务器要改成`smtp.gmail.com`外，还需要把端口改成`587`，密码直接使用gmail的登录密码即可。但依然**可能会登录失败**。原因是目前**gmail对安全性较低的应用的访问权限进行控制**，我们需要手动设置。[点击进行Gmail安全性较低的应用的访问权限设置](https://myaccount.google.com/lesssecureapps?utm_source=google-account&utm_medium=web)，点击界面如下，设置启用即可。
