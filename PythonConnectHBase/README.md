@@ -40,6 +40,7 @@ make install
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190302002158486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
 ## 二、本地Python连接远程集群中的HBase
 ①分别下载两个安装包：`thrift`和`hbase-thrift`。
+
 ②在`..\site-packages\hbase`下替换两个文件，[Hbase.py](https://github.com/SparksFly8/Tools/blob/master/Hbase.py)和[ttypes.py](https://github.com/SparksFly8/Tools/blob/master/ttypes.py)。
 ```js
 F:\Env\virtual3.6\Lib\site-packages\hbase  # 我自己本地放置包的路径
@@ -72,7 +73,9 @@ print(client.getTableNames())  # 获取当前所有的表名
 > **1.建表**
 
 【函数】：`createTable(tableName, columnFamilies)`
+
 【参数】：tableName-表名； columnFamilies-列簇(列表)
+
 【案例】：
 
 ```js
@@ -97,7 +100,9 @@ $ create 'table','c1','c2'
 > **2.删除表**
 
 【函数】：`deleteTable(tableName)`
+
 【参数】：tableName-表名
+
 【案例】：
 
 ```js
@@ -118,7 +123,9 @@ $ drop 'table'
 > **3.向某行某列插入/更新数据**
 
 【函数】：`mutateRow(tableName, row, mutations)`
+
 【参数】：tableName-表名；row-行键；mutations-变化(列表)；
+
 【案例】：
 
 ```js
@@ -142,10 +149,13 @@ $ put 'table','0001','c1:hobby2','watch movies'
 > **4.读取指定列簇指定列数据**
 
 【函数1】：`get(tableName, row, column)`
+
 【函数2】：`getVer(tableName, row, column, numVersions)`
+
 
 【参数】：tableName-表名；row-行键；numVersions-版本号；
 column-指定列簇的列名(或仅填列簇名也ok)；
+
 【案例】：
 
 ```js
@@ -169,6 +179,7 @@ watch movies
 > **5.遍历指定行所有数据**
 
 【函数1】：`getRow(tableName, row)`
+
 【函数2】：`getRowWithColumns(tableName, row, columns)`
 
 【参数】：tableName-表名；row-行键；column-一个指定列簇指定列名的列表(若仅填列簇名就返回该列簇下所有列值)；
@@ -199,8 +210,11 @@ $ get 'table','0001','c1:hobby2'
 watch movies
 ```
 【额外补充】：以下是我根据`getRow`和`getRowWithColumns`两个函数，经过数据清洗成常用字典形式，并**过滤冒号**，返回仅含有列名对应列值的字典。其中对于以下三种情况分别进行了处理：
+
 ①获取HBase指定表**指定行**的所有数据，以**字典**形式作为返回值。
+
 ②获取HBase指定表指定行**指定列簇**的所有数据，以**字典**形式作为返回值。
+
 ③获取HBase指定表指定行**指定列簇指定列**的数据，以**字符串**形式作为返回值。
 
 ```js
@@ -259,8 +273,5 @@ watch movies
 ```
 
 
-【参考文献】：
-[\[1\] 使用 Python 和 Thrift 连接 HBase.](http://shzhangji.com/cnblogs/2018/04/22/connect-hbase-with-python-and-thrift/)
-
-[\[2\] 用Python3.6操作HBase之HBase-Thrift.](https://blog.csdn.net/luanpeng825485697/article/details/81048468)
+【对应我的博客地址】：https://blog.csdn.net/SL_World/article/details/88071357
 
