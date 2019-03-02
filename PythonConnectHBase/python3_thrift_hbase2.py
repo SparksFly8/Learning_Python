@@ -1,0 +1,115 @@
+# encoding:utf-8
+__author__ = 'shiliang'
+__date__ = '2019/3/1 23:48'
+
+from thrift.transport import TSocket,TTransport
+from thrift.protocol import TBinaryProtocol
+from hbase.ttypes import ColumnDescriptor
+from hbase import Hbase
+from hbase.ttypes import Mutation
+
+
+def connectHBase():
+    '''
+    连接远程HBase
+    '''
+    # thrift默认端口是9090
+    socket = TSocket.TSocket('10.0.86.245',9090) # 10.0.86.245是master结点ip
+    socket.setTimeout(5000)
+    transport = TTransport.TBufferedTransport(socket)
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+    client = Hbase.Client(protocol)
+    socket.open()
+    return client
+
+
+def ListTables(client):
+    '''
+    列出所有表
+    '''
+    print(client.getTableNames())
+
+
+def createTable(client, tableName, *colFamilys):
+    '''
+    创建新表
+    '''
+    colFamilyList = []
+    # 根据可变参数定义列族
+    for colFamily in colFamilys:
+        col = ColumnDescriptor(name=str(colFamily))
+        colFamilyList.append(col)
+    # 创建表
+    client.createTable(tableName,colFamilyList)
+    print('建表成功！')
+
+
+def deleteTable(client, tableName):
+    '''
+    删除表
+    '''
+    if client.isTableEnabled(tableName):
+        client.disableTable(tableName)  # 删除表前需要先设置该表不可用
+    client.deleteTable(tableName)
+    print('删除表{}成功！'.format(tableName))
+
+
+def insertRow(client, tableName, rowName, colFamily, columnName, value):
+    '''
+    在指定表指定行指定列簇插入/更新列值
+    '''
+    mutations = [Mutation(column='{0}:{1}'.format(colFamily, columnName), value=str(value))]
+    client.mutateRow(tableName, rowName, mutations)
+    print('在{0}表{1}列簇{2}列插入{3}数据成功.'.format(tableName, colFamily, columnName, value))
+
+
+def getRow(client, tableName, rowName, colFamily=None, columns=None):
+    '''
+        功能：获取HBase指定表的某一行数据。
+        @param client 连接HBase的客户端实例
+        @param tableName 表名
+        @param rowName 行键名
+        @param colFamily 列簇名
+        @param columns 一个包含指定列名的列表
+        @return RowDict 一个包含列名和列值的字典(若直接返回指定列值，则返回的是字符串)
+    '''
+    # 1.如果列簇和列名两个都为空，则直接取出当前行所有值，并转换成字典形式作为返回值
+    RowDict = {}
+    if colFamily is None and columns is None:
+        results = client.getRow(tableName, rowName)
+        for result in results:
+            for key, TCell_value in result.columns.items():
+                # 由于key值是'列簇:列名'形式,所以需要通过split函数以':'把列名分割出来
+                each_col = key.split(':')[1]
+                RowDict[each_col] = TCell_value.value # 取出TCell元组中的value值
+        return RowDict
+    # 2.如果仅是列名为空，则直接取出当前列簇所有值，并转换成字典形式作为返回值
+    elif columns is None:
+        results = client.getRowWithColumns(tableName, rowName, [colFamily])
+        for result in results:
+            for key, TCell_value in result.columns.items():
+                # 由于key值是'列簇:列名'形式,所以需要通过split函数以':'把列名分割出来
+                each_col = key.split(':')[1]
+                RowDict[each_col] = TCell_value.value  # 取出TCell元组中的value值
+        return RowDict
+    # 3.如果列簇和列名都不为空，则直接取出当前列的值
+    elif colFamily is not None and columns is not None:
+        results = client.getRow(tableName, rowName)
+        for result in results:
+            value = result.columns.get('{0}:{1}'.format(colFamily, columns)).value
+        return value
+    else:
+        raise Exception('关键参数缺失，请重新检查参数！')
+
+if __name__ == '__main__':
+    # 连接HBase数据库，返回客户端实例
+    client = connectHBase()
+    # 创建表
+    # createTable(client, 'firstTable', 'c1', 'c2', 'c3')
+    # 插入或更新列值
+    # insertRow(client, 'firstTable', '0001', 'c1', 'name', 'sparks')
+    # 获取HBase指定表的某一行数据
+    dataDict = getRow(client, 'firstTable', '0001')
+    print(dataDict)
+    # 列出所有表名
+    ListTables(client)
