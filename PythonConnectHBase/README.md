@@ -1,4 +1,4 @@
-# Learning_Python
+# 使用Python-3.6连接操作远程完全分布式集群中的HBase-2.1
 ## 前提条件
 
  1. 已安装Python-3.6。
@@ -261,5 +261,6 @@ watch movies
 
 【参考文献】：
 [\[1\] 使用 Python 和 Thrift 连接 HBase.](http://shzhangji.com/cnblogs/2018/04/22/connect-hbase-with-python-and-thrift/)
+
 [\[2\] 用Python3.6操作HBase之HBase-Thrift.](https://blog.csdn.net/luanpeng825485697/article/details/81048468)
 
