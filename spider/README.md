@@ -243,9 +243,11 @@ if __name__ == '__main__':
 
 【时间对比】：
 对于上例中10个URL的爬取时间，下面整理成了表格。
-|CPU核数,实现方式| 普通同步爬虫 |多进程爬虫 |异步爬虫 |
+
+|CPU核数\实现方式| 普通同步爬虫 |多进程爬虫 |异步爬虫 |
 |--|--|--|--|
 | 4核 | 13.7秒 |5.0秒 |2.4秒 |
+
 其中**增加多进程中进程池`Pool(n)`的`n`可加速爬虫**，下图显示了消耗的时间(单位.秒)和`Pool()`参数的关系。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190126111946242.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
 如果你以为到这里就结束了，那你就要错过最精彩的东西了：)
