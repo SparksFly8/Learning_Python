@@ -217,7 +217,7 @@ watch movies
 
 ③获取HBase指定表指定行**指定列簇指定列**的数据，以**字符串**形式作为返回值。
 
-```
+```js
 def getRow(client, tableName, rowName, colFamily=None, columns=None):
     '''
     功能：获取HBase指定表的某一行数据。
