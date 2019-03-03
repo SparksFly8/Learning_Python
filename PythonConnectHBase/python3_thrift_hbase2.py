@@ -12,6 +12,7 @@ from hbase.ttypes import Mutation
 def connectHBase():
     '''
     连接远程HBase
+    :return: 连接HBase的客户端实例
     '''
     # thrift默认端口是9090
     socket = TSocket.TSocket('10.0.86.245',9090) # 10.0.86.245是master结点ip
@@ -33,6 +34,9 @@ def ListTables(client):
 def createTable(client, tableName, *colFamilys):
     '''
     创建新表
+    :param client: 连接HBase的客户端实例
+    :param tableName: 表名
+    :param *colFamilys: 任意个数的列簇名
     '''
     colFamilyList = []
     # 根据可变参数定义列族
@@ -53,6 +57,18 @@ def deleteTable(client, tableName):
     client.deleteTable(tableName)
     print('删除表{}成功！'.format(tableName))
 
+def deleteAllRow(client, tableName, rowKey):
+    '''
+    删除指定表某一行数据
+    :param client: 连接HBase的客户端实例
+    :param tableName: 表名
+    :param rowKey: 行键
+    '''
+    if getRow(client, tableName, rowKey):
+        client.deleteAllRow(tableName, rowKey)
+        print('删除{0}表{1}行成功！'.format(tableName, rowKey))
+    else:
+        print('错误提示：未找到{0}表{1}行数据！'.format(tableName, rowKey))
 
 def insertRow(client, tableName, rowName, colFamily, columnName, value):
     '''
@@ -65,13 +81,13 @@ def insertRow(client, tableName, rowName, colFamily, columnName, value):
 
 def getRow(client, tableName, rowName, colFamily=None, columns=None):
     '''
-        功能：获取HBase指定表的某一行数据。
-        @param client 连接HBase的客户端实例
-        @param tableName 表名
-        @param rowName 行键名
-        @param colFamily 列簇名
-        @param columns 一个包含指定列名的列表
-        @return RowDict 一个包含列名和列值的字典(若直接返回指定列值，则返回的是字符串)
+    功能：获取HBase指定表的某一行数据。
+    :param client 连接HBase的客户端实例
+    :param tableName 表名
+    :param rowName 行键名
+    :param colFamily 列簇名
+    :param columns 一个包含指定列名的列表
+    :return RowDict 一个包含列名和列值的字典(若直接返回指定列值，则返回的是字符串)
     '''
     # 1.如果列簇和列名两个都为空，则直接取出当前行所有值，并转换成字典形式作为返回值
     RowDict = {}
@@ -109,7 +125,9 @@ if __name__ == '__main__':
     # 插入或更新列值
     # insertRow(client, 'firstTable', '0001', 'c1', 'name', 'sparks')
     # 获取HBase指定表的某一行数据
-    dataDict = getRow(client, 'firstTable', '0001')
-    print(dataDict)
+    # dataDict = getRow(client, 'firstTable', '0001')
+    # print(dataDict)
+    # 删除指定表某行数据
+    deleteAllRow(client, '2018AAAI_Papers', '20181102')
     # 列出所有表名
     ListTables(client)
