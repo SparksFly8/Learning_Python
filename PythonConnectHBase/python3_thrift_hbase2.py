@@ -1,6 +1,8 @@
-# encoding:utf-8
+# -*- coding: utf-8 -*-
 __author__ = 'shiliang'
 __date__ = '2019/3/1 23:48'
+
+import math
 
 from thrift.transport import TSocket,TTransport
 from thrift.protocol import TBinaryProtocol
@@ -117,6 +119,20 @@ def getRow(client, tableName, rowName, colFamily=None, columns=None):
     else:
         raise Exception('关键参数缺失，请重新检查参数！')
 
+
+def bigInt2str(bigNum):
+    '''
+    大整数转换为字符串
+    :param bigNum: 大整数
+    :return string: 转换后的字符串
+    '''
+    string = ''
+    for i in range(len(str(bigNum)),0,-1):
+        a = int(math.pow(10, (i-1)))
+        b = bigNum//a%10
+        string += str(b)
+    return string
+
 if __name__ == '__main__':
     # 连接HBase数据库，返回客户端实例
     client = connectHBase()
@@ -125,9 +141,9 @@ if __name__ == '__main__':
     # 插入或更新列值
     # insertRow(client, 'firstTable', '0001', 'c1', 'name', 'sparks')
     # 获取HBase指定表的某一行数据
-    # dataDict = getRow(client, 'firstTable', '0001')
-    # print(dataDict)
+    dataDict = getRow(client, 'firstTable', '0001')
+    print(dataDict)
     # 删除指定表某行数据
-    deleteAllRow(client, '2018AAAI_Papers', '20181102')
+    # deleteAllRow(client, '2018AAAI_Papers', '20181106')
     # 列出所有表名
     ListTables(client)
