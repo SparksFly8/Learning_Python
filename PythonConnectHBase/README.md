@@ -274,10 +274,15 @@ watch movies
 > **6.扫描并获取多行数据**
 
 【函数1】：`scannerOpen(tableName, startRow, columns)`
+
 【功能】：从startRow行扫描到该表最后一行。
+
 【函数2】：`scannerOpenWithStop(tableName, startRow, stopRow, columns)`
+
 【功能】：从startRow行扫描到该表stopRow的前一行。
+
 【参数】：tableName-表名；startRow-起始行键；stopRow-截止行键；column-一个指定列簇指定列名的列表(若仅填列簇名就返回该列簇下所有列值)；
+
 【案例】：
 
 ```js
