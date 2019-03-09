@@ -271,6 +271,70 @@ print(getRow(client, 'table', '0001', 'c1', 'hobby2'))
 watch movies
 ```
 
+> **6.扫描并获取多行数据**
+
+【函数1】：`scannerOpen(tableName, startRow, columns)`
+【功能】：从startRow行扫描到该表最后一行。
+【函数2】：`scannerOpenWithStop(tableName, startRow, stopRow, columns)`
+【功能】：从startRow行扫描到该表stopRow的前一行。
+【参数】：tableName-表名；startRow-起始行键；stopRow-截止行键；column-一个指定列簇指定列名的列表(若仅填列簇名就返回该列簇下所有列值)；
+【案例】：
+
+```js
+# 从20180900行扫描到最后一行
+scannerId = client.scannerOpen('2018AAAI_Papers', '20180900', ['paper_info:title','paper_info:keywords'])
+# 根据scannerId和rowsCnt(扫描的行数,可自己定义,若超出表的范围则扫描到表的最后一行)得到结果
+results = client.scannerGetList(scannerId, rowsCnt)
+```
+
+```js
+# 从20180900行扫描到20180904行
+scannerId = client.scannerOpenWithStop('2018AAAI_Papers', '20180900', '20180904', ['paper_info:title','paper_info:keywords'])
+# 根据scannerId和rowsCnt(扫描的行数,可自己定义,若超出表的范围则扫描到表的最后一行)得到结果
+results = client.scannerGetList(scannerId, rowsCnt)
+```
+【额外补充】：以下是我根据`scannerOpen`和`scannerOpenWithStop`两个函数，经过数据清洗成常用字典形式，并**过滤冒号**，返回一个包含每行**行键**对应**该行列值信息字典**的字典。**若传入行键或列名有误，则返回空列表**。最终整合成`scannerGetSelect`方法。
+
+```js
+def scannerGetSelect(client, tableName, columns, startRow, stopRow=None, rowsCnt=2000):
+    '''
+    依次扫描HBase指定表的每行数据(根据起始行，扫描到表的最后一行或指定行的前一行)
+    :param client: 连接HBase的客户端实例
+    :param tableName: 表名
+    :param columns: 一个包含(一个或多个列簇下对应列名的)列表
+    :param startRow: 起始扫描行
+    :param stopRow:  停止扫描行(默认为空)
+    :param rowsCnt:  需要扫描的行数
+    :return MutilRowsDict: 返回一个包含多行数据的字典，以每行行键定位是哪一行
+    '''
+    # 如果stopRow为空，则使用scannerOpen方法扫描到表最后一行
+    if stopRow is None:
+        scannerId = client.scannerOpen(tableName, startRow, columns)
+    # 如果stopRow不为空，则使用scannerOpenWithStop方法扫描到表的stopRow行
+    else:
+        scannerId = client.scannerOpenWithStop(tableName, startRow, stopRow, columns)
+    results = client.scannerGetList(scannerId, rowsCnt)
+    # 如果查询结果不为空，则传入行键值或列值参数正确
+    if results:
+        MutilRowsDict = {}
+        for result in results:
+            RowDict = {}
+            for key, TCell_value in result.columns.items():
+                # 获取该行行键
+                rowKey = result.row
+                # 由于key值是'列簇:列名'形式,所以需要通过split函数以':'把列名分割出来
+                each_col = key.split(':')[1]
+                RowDict[each_col] = TCell_value.value  # 取出TCell元组中的value值
+                # 把当前含有多个列值信息的行的字典和改行行键存储在MutilRowsDict中
+                MutilRowsDict[rowKey] = RowDict
+        return MutilRowsDict
+    # 如果查询结果为空，则传入行键值或列值参数错误，返回空列表
+    else:
+        return []
+```
+执行结果如下图：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2019030910193298.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70)
+
 
 【对应我的博客地址】：https://blog.csdn.net/SL_World/article/details/88071357
 
