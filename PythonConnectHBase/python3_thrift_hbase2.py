@@ -9,6 +9,8 @@ from thrift.protocol import TBinaryProtocol
 from hbase.ttypes import ColumnDescriptor
 from hbase import Hbase
 from hbase.ttypes import Mutation
+from tqdm import tqdm
+import xlrd
 
 
 def connectHBase():
@@ -25,13 +27,11 @@ def connectHBase():
     socket.open()
     return client
 
-
 def ListTables(client):
     '''
     列出所有表
     '''
     print(client.getTableNames())
-
 
 def createTable(client, tableName, *colFamilys):
     '''
@@ -49,7 +49,6 @@ def createTable(client, tableName, *colFamilys):
     client.createTable(tableName,colFamilyList)
     print('建表成功！')
 
-
 def deleteTable(client, tableName):
     '''
     删除表
@@ -58,6 +57,18 @@ def deleteTable(client, tableName):
         client.disableTable(tableName)  # 删除表前需要先设置该表不可用
     client.deleteTable(tableName)
     print('删除表{}成功！'.format(tableName))
+
+def deleteTable(client, tableName):
+    '''
+    删除表
+    :param client: 连接HBase的客户端实例
+    :param tableName: 表名
+    :return:
+    '''
+    if client.isTableEnabled(tableName):
+        client.disableTable(tableName)
+    client.deleteTable(tableName)
+    print('删除表'+tableName+'成功.')
 
 def deleteAllRow(client, tableName, rowKey):
     '''
@@ -76,9 +87,9 @@ def insertRow(client, tableName, rowName, colFamily, columnName, value):
     '''
     在指定表指定行指定列簇插入/更新列值
     '''
-    mutations = [Mutation(column='{0}:{1}'.format(colFamily, columnName), value=str(value))]
+    mutations = [Mutation(column='{0}:{1}'.format(colFamily, columnName), value=str(value).encode('utf-8').decode('utf-8'))]
     client.mutateRow(tableName, rowName, mutations)
-    print('在{0}表{1}列簇{2}列插入{3}数据成功.'.format(tableName, colFamily, columnName, value))
+    # print('在{0}表{1}列簇{2}列插入{3}数据成功.'.format(tableName, colFamily, columnName, value))
 
 
 def getRow(client, tableName, rowName, colFamily=None, columns=None):
@@ -155,7 +166,6 @@ def scannerGetSelect(client, tableName, columns, startRow, stopRow=None, rowsCnt
     else:
         return []
 
-
 def bigInt2str(bigNum):
     '''
     大整数转换为字符串
@@ -169,20 +179,65 @@ def bigInt2str(bigNum):
         string += str(b)
     return string
 
+def xlsx2HBase(client, xlsx_Path, tableName, colFamily1, colFamily2, year):
+    '''
+    xlsx数据上传到HBase中
+    :param client: 连接HBase的客户端实例
+    :param xlsx_Path: xlsx文件所在地址
+    :param tableName: 表名
+    :param colFamily1: 列簇1
+    :param colFamily2: 列簇2
+    :param year: 年份
+    '''
+    # 1.打开所在工作簿
+    data = xlrd.open_workbook(xlsx_Path)
+    # 2.获取工作簿中的sheet
+    sheet = data.sheets()[0]
+    # 3.获取当前sheet的行数(含表头)
+    nRows = sheet.nrows
+    # 从第1行遍历到第nRows-1行,tqdm()使用进度条
+    for RowNum in tqdm(range(1,nRows)):
+        rowName = year+'{:0>4d}'.format(RowNum) # 根据年份和行值拼接成字符串形成rowKey
+        for ColNum in range(2,5):               # 从第2列遍历到第4列
+            value = sheet.cell(RowNum, ColNum).value   # 单元格信息
+            if value != '0':
+                header = sheet.cell(0, ColNum).value       # 每列的表头信息
+                insertRow(client, tableName, rowName, colFamily1, header, value)
+                # print('第'+rowName+'行'+header+'列插入数据成功.')
+        for ColNum in range(5,47):  # 从第5列遍历到第46列
+            value = sheet.cell(RowNum, ColNum).value   # 单元格信息
+            if value != '0':
+                header = sheet.cell(0, ColNum).value  # 每列的表头信息
+                insertRow(client, tableName, rowName, colFamily2, header, value)
+                # print('第'+rowName+'行'+header+'列插入数据成功.')
+
 if __name__ == '__main__':
+    tableName = '2018AAAI' # 数据库表名
+    # tableName = '2018AAAI_Papers' # 数据库表名
+    # tableName = 'trash' # 数据库表名
+    colFamily1 = 'paper_info'     # 第一个列簇
+    colFamily2 = 'creator_info'   # 第二个列簇
+    xlsx_Path = 'C:\\Users\\Administrator\\Desktop\\whole_data.xlsx'
+    year = '2018'
+
     # 连接HBase数据库，返回客户端实例
     client = connectHBase()
+    # ListTables(client)
+    # xlsx数据上传到HBase中
+    # xlsx2HBase(client, xlsx_Path, tableName, colFamily1, colFamily2, year)
     # 创建表
-    # createTable(client, 'firstTable', 'c1', 'c2', 'c3')
+    # createTable(client, tableName, colFamily1, colFamily2)
     # 插入或更新列值
-    # insertRow(client, 'firstTable', '0001', 'c1', 'name', 'sparks')
+    # insertRow(client, tableName, '20180936', 'creator_info', 'affiliation2', 'Ecole Polytechnique Fédérale de Lausanne (EPFL)')
     # 获取HBase指定表的某一行数据
     # dataDict = getRow(client, 'firstTable', '0001')
     # print(dataDict)
     # 删除指定表某行数据
     # deleteAllRow(client, '2018AAAI_Papers', '20181106')
+    # 删除整表
+    # deleteTable(client, tableName)
     # 依次扫描HBase指定表的每行数据(根据起始行，扫描到表的最后一行或指定行的前一行)
-    MutilRowsDict = scannerGetSelect(client, '2018AAAI_Papers', ['paper_info:title','paper_info:keywords'], '20180900', '20180904')
-    print(MutilRowsDict)
+    # MutilRowsDict = scannerGetSelect(client, tableName, ['creator_info:affiliation2'], '20180936')
+    # print(MutilRowsDict)
     # 列出所有表名
     ListTables(client)
