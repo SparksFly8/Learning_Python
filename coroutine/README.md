@@ -333,8 +333,11 @@ IO任务2已完成，耗时3s
 done, pending = await asyncio.wait(aws)
 ```
 此处并发运行传入的`aws`(awaitable objects)，同时通过`await`返回一个包含(done, pending)的元组，**done**表示**已完成**的任务列表，**pending**表示**未完成**的任务列表。
+
 **注：**
+
 ①只有当给`wait()`传入`timeout`参数时才有可能产生`pending`列表。
+
 ②通过`wait()`返回的**结果集**是**按照**事件循环中的任务**完成顺序**排列的，所以其往往**和原始任务顺序不同**。
 ## 二、asyncio.gather()
 如果你只关心协程并发运行后的结果集合，可以使用`gather()`，它不仅通过`await`返回仅一个结果集，而且这个结果集的**结果顺序**是传入任务的**原始顺序**。
@@ -418,21 +421,22 @@ IO任务1已完成，耗时3s
 【解释】：从上面的程序可以看出，使用`as_completed(tasks)`和`wait(tasks)`**相同之处**是返回结果的顺序是**协程的完成顺序**，这与gather()恰好相反。而**不同之处**是`as_completed(tasks)`可以**实时返回**当前完成的结果，而`wait(tasks)`需要等待所有协程结束后返回的`done`去获得结果。
 ## 四、总结
 以下`aws`指：`awaitable objects`。即**可等待对象集合**，如一个协程是一个可等待对象，一个装有多个协程的**列表**是一个`aws`。
-| asyncio |  主要传参|　返回值顺序|`await`返回值类型|函数返回值类型|
+| asyncio |  主要传参 |　返回值顺序  | `await`返回值类型 | 函数返回值类型 |
 |--|--|--|--|--|
-| wait()| aws | 协程完成顺序|(done,pending)<br>装有两个任务列表元组|coroutine|
-| as_completed() | aws  |协程完成顺序|原始返回值|迭代器|
-|  gather()| *aws |传参任务顺序|返回值列表|awaitable|
+| wait() | aws | 协程完成顺序 | (done,pending)<br>装有两个任务列表元组 | coroutine |
+| as_completed() | aws  | 协程完成顺序 | 原始返回值 | 迭代器 |
+|  gather() | *aws | 传参任务顺序 | 返回值列表 | awaitable |
 
 【参考文献】：
+
 [[1] Composing Coroutines with Control Structures](https://pymotw.com/3/asyncio/control.html)
+
 [[2] Python 3.7.2文档.协程与任务](https://docs.python.org/zh-cn/3/library/asyncio-task.html)
+
 [[3] 控制组合式 Coroutines](https://mozillazg.com/2017/08/python-asyncio-note-control-coroutines)
 
 
 
 【我的博客对应地址】：https://blog.csdn.net/SL_World/article/details/86597738
 
-
-<img src="https://img-blog.csdnimg.cn/20190215122907151.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1NMX1dvcmxk,size_16,color_FFFFFF,t_70" alt="微信" title="微信打赏" height="100%" width="100%">
 
