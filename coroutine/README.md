@@ -425,15 +425,8 @@ IO任务1已完成，耗时3s
 |--|--|--|--|--|
 | wait() | aws | 协程完成顺序 | (done,pending)<br>装有两个任务列表元组 | coroutine |
 | as_completed() | aws  | 协程完成顺序 | 原始返回值 | 迭代器 |
-|  gather() | *aws | 传参任务顺序 | 返回值列表 | awaitable |
+|  gather() | aws | 传参任务顺序 | 返回值列表 | awaitable |
 
-【参考文献】：
-
-[[1] Composing Coroutines with Control Structures](https://pymotw.com/3/asyncio/control.html)
-
-[[2] Python 3.7.2文档.协程与任务](https://docs.python.org/zh-cn/3/library/asyncio-task.html)
-
-[[3] 控制组合式 Coroutines](https://mozillazg.com/2017/08/python-asyncio-note-control-coroutines)
 
 
 
