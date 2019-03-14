@@ -423,13 +423,9 @@ IO任务1已完成，耗时3s
 以下`aws`指：`awaitable objects`。即**可等待对象集合**，如一个协程是一个可等待对象，一个装有多个协程的**列表**是一个`aws`。
 
 | asyncio |  主要传参 |　返回值顺序  | `await`返回值类型 | 函数返回值类型 |
-
-|--|--|--|--|--|
-
+| -- | -- | -- | -- | -- |
 | wait() | aws | 协程完成顺序 | (done,pending)<br>装有两个任务列表元组 | coroutine |
-
 | as_completed() | aws  | 协程完成顺序 | 原始返回值 | 迭代器 |
-
 |  gather() | *aws | 传参任务顺序 | 返回值列表 | awaitable |
 
 
