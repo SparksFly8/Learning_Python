@@ -9,6 +9,6 @@ Python-3.6.6
  4. 异步爬虫代码。
  5. 快速上手中英文词云图。
  
-** 详情解说见每个文件夹中的README。**
+**详情解说见每个文件夹中的README。**
  
 【我的博客地址】：https://blog.csdn.net/SL_World
