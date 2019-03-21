@@ -3,6 +3,8 @@
 >引言: "**词云**"，又称文字云，是由**词汇**组成**类似云的彩色图形**。可对网络文本中出现**频率较高**的“**关键词**”予以**视觉上的突出**，形成"关键词云层"或"**关键词渲染**"，从而**过滤掉大量的文本信息**，使浏览者只要一眼扫过文本即可领略文本主旨。                                        
 >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;——摘自百度百科
 
+【对应博文地址】：https://blog.csdn.net/SL_World/article/details/88636488
+
 ![在这里插入图片描述](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1552824473304&di=f17a2bb6816ca4cba4ffccffae7d211c&imgtype=0&src=http://5b0988e595225.cdn.sohucs.com/q_70,c_zoom,w_640/images/20180808/54c5b98f04494d57a7ad7e6fe592dbe7.jpeg)
 ## 本文运行环境与所需包：
 
