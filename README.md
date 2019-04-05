@@ -1,6 +1,6 @@
 # Learning_Python
 ![](https://img.shields.io/badge/license-MIT-success.svg)
-[![](https://img.shields.io/badge/CSDN-SL_World-orange.svg)](https://blog.csdn.net/SL_World)
+[![](https://img.shields.io/badge/Blog-SL_World-orange.svg)](https://blog.csdn.net/SL_World)
 ## 运行环境：
 Python-3.6.6
 ## 概览
