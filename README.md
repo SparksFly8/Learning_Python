@@ -1,6 +1,5 @@
 # Learning_Python
-![](https://img.shields.io/badge/license-MIT-blueviolet.svg)
-![](https://img.shields.io/github/downloads/SparksFly8/Learning_Python/total.svg)
+![](https://img.shields.io/badge/license-MIT-success.svg)
 [![](https://img.shields.io/badge/CSDN-SL_World-orange.svg)](https://blog.csdn.net/SL_World)
 ## 运行环境：
 Python-3.6.6
