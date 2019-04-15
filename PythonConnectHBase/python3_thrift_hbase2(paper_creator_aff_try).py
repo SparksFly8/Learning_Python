@@ -158,11 +158,12 @@ def bigInt2str(bigNum):
         string += str(b)
     return string
 
-def xlsx2HBase(client, xlsx_Path, tableName, colFamily_per, colFamily_cre, colFamily_aff, colFamily_try, year):
+def xlsx2HBase(client, xlsx_Path, sheetNum, tableName, colFamily_per, colFamily_cre, colFamily_aff, colFamily_try, year):
     '''
     xlsx数据上传到HBase中
     :param client: 连接HBase的客户端实例
     :param xlsx_Path: xlsx文件所在地址
+    :param sheetNum: sheet序号
     :param tableName: 表名
     :param colFamily_per: 论文信息列簇
     :param colFamily_cre: 作者列簇
@@ -173,57 +174,63 @@ def xlsx2HBase(client, xlsx_Path, tableName, colFamily_per, colFamily_cre, colFa
     # 1.打开所在工作簿
     data = xlrd.open_workbook(xlsx_Path)
     # 2.获取工作簿中的sheet
-    sheet = data.sheets()[0]
-    # 3.获取当前sheet的行数(含表头)
+    sheet = data.sheets()[sheetNum]
+    # 3.获取当前sheet的行列数(含表头)
     nRows = sheet.nrows
+    nCols = sheet.ncols
     # 从第1行遍历到第nRows-1行,tqdm()使用进度条
     for RowNum in tqdm(range(1,nRows)):
+    # for RowNum in tqdm(range(1,20)):
         rowName = year+'{:0>4d}'.format(RowNum) # 根据年份和行值拼接成字符串形成rowKey
         for ColNum in range(2,5):               # 从第2列遍历到第4列
             value = sheet.cell(RowNum, ColNum).value   # 单元格信息
-            if value != '0':
-                header = sheet.cell(0, ColNum).value       # 每列的表头信息
-                insertRow(client, tableName, rowName, colFamily_per, header, value)
-                # print('第'+rowName+'行'+header+'列插入数据成功.')
+            if str(value) == '0' or str(value) == '0.0':
+                continue
+            header = sheet.cell(0, ColNum).value       # 每列的表头信息
+            insertRow(client, tableName, rowName, colFamily_per, header, value)
+            # print('第'+rowName+'行'+header+'列插入数据成功.')
         cre_bool = True  # 作者锁
         aff_bool = True  # 机构锁
-        for ColNum in range(5,47):  # 从第5列遍历到第46列
+        for ColNum in range(5,nCols):  # 从第5列遍历到第46列
             value = sheet.cell(RowNum, ColNum).value   # 单元格信息
-            if value != '0':
-                header = sheet.cell(0, ColNum).value  # 每列的表头信息
-                if cre_bool:   # 只存作者
-                    insertRow(client, tableName, rowName, colFamily_cre, header, value)
-                    cre_bool = False
-                elif aff_bool: # 只存机构
-                    insertRow(client, tableName, rowName, colFamily_aff, header, value)
-                    aff_bool = False
-                else:          # 只存国家
-                    insertRow(client, tableName, rowName, colFamily_try, header, value)
-                    cre_bool = True  # 作者锁
-                    aff_bool = True  # 机构锁
-                # print('第'+rowName+'行'+header+'列插入数据成功.')
+            if str(value) == '0' or str(value) == '0.0':
+                continue
+            header = sheet.cell(0, ColNum).value  # 每列的表头信息
+            if cre_bool:   # 只存作者
+                insertRow(client, tableName, rowName, colFamily_cre, header, value)
+                cre_bool = False
+            elif aff_bool: # 只存机构
+                insertRow(client, tableName, rowName, colFamily_aff, header, value)
+                aff_bool = False
+            else:          # 只存国家
+                insertRow(client, tableName, rowName, colFamily_try, header, value)
+                cre_bool = True  # 作者锁
+                aff_bool = True  # 机构锁
+            # print('第'+rowName+'行'+header+'列插入数据成功.')
 
 
 if __name__ == '__main__':
-    tableName = 'trash' # 数据库表名
+    # tableName = 'trash' # 数据库表名
+    tableName = '2017AAAI' # 数据库表名
     colFamily_per = 'paper'          # 论文信息列簇
     colFamily_cre = 'creator'        # 作者列簇
     colFamily_aff = 'affiliation'    # 机构列簇
     colFamily_try = 'country'        # 国家列簇
     xlsx_Path = r'C:\Users\Administrator\Desktop\2014-2017.xlsx'
-    year = '2018'
+    sheetNum = 1
+    year = '2017'
     # 连接HBase数据库，返回客户端实例
     client = connectHBase()
     # xlsx数据上传到HBase中
-    # xlsx2HBase(client, xlsx_Path, tableName, colFamily_per, colFamily_cre, colFamily_aff, colFamily_try, year)
+    xlsx2HBase(client, xlsx_Path, sheetNum, tableName, colFamily_per, colFamily_cre, colFamily_aff, colFamily_try, year)
+    # 删除整表
+    # deleteTable(client, tableName)
     # 创建表
     # createTable(client, tableName, colFamily_per, colFamily_cre, colFamily_aff, colFamily_try)
     # 插入或更新列值
     # insertRow(client, tableName, '20180936', 'creator_info', 'affiliation2', 'Ecole Polytechnique Fédérale de Lausanne (EPFL)')
     # 删除指定表某行数据
     # deleteAllRow(client, '2018AAAI_Papers', '20181106')
-    # 删除整表
-    # deleteTable(client, tableName)
     # 依次扫描HBase指定表的每行数据(根据起始行，扫描到表的最后一行或指定行的前一行)
     # MutilRowsDict = scannerGetSelect(client, tableName, ['creator_info:affiliation2'], '20180936')
     # MutilRowsDict = scannerGetSelect(client, tableName, ['paper:title','creator'], '20180291')
